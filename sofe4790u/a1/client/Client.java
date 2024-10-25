@@ -73,8 +73,8 @@ public class Client {
                 String input = scanner.nextLine();
                 if (input.startsWith("/upload")) {
                     String[] parts = input.split(" ", 2);
-                    if (parts.length < 2) {
-                        System.out.println("Usage: /upload <file_path>");
+                    if (parts.length < 2 || parts[1].trim().isEmpty()) {
+                        System.out.println("Error: Please provide a valid file path. Usage: /upload <file_path>");
                         continue;
                     }
                     String filePath = parts[1];
@@ -83,12 +83,13 @@ public class Client {
                         out.println("/upload");
                         sendFile(file, fileOut);
                     } else {
-                        System.out.println("File not found: " + filePath);
+                        System.out.println("Error: File not found at the specified path: " + filePath);
                     }
                 } else {
                     out.println(input);
                 }
             }
+
         } catch (IOException e) {
             System.out.println("Could not connect to the server. Please ensure the server is running and try again.");
             e.printStackTrace();
@@ -126,7 +127,8 @@ public class Client {
 
     /*
      * This method is for sending a file to the server.
-     * we want to send a file to the server, which will then broadcast it to all clients
+     * we want to send a file to the server, which will then broadcast it to all
+     * clients
      */
     private static void sendFile(File file, DataOutputStream fileOut) {
         try {
