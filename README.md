@@ -20,44 +20,42 @@ Instructions:
 
 1. On the other 3 terminals, run the clients by running `tools/build_and_run_client1.sh`, `tools/build_and_run_client2.sh`, and `tools/build_and_run_client3.sh`
 
-### Server
+### Manual Compilation
 
-1. Compile and Create JAR
+If you want to compile and run the server and clients manually, you can follow these steps:
+
+1. Compile and run server
 
 ```bash
-javac -d out sofe4790u/a1/server/Server.java
+cd server
+javac -d out ../sofe4790u/a1/server/Server.java
 jar cfe server.jar sofe4790u.a1.server.Server -C out sofe4790u
+java -jar server.jar 5555 5556
 ```
 
-2. Execute JAR file with `<port>`
+2. Compile and run client1
 
 ```bash
-java -jar ServerApp.jar 5555
-```
-
-#### Full Command
-
-```bash
-javac -d out sofe4790u/a1/server/Server.java && jar cfe server.jar sofe4790u.a1.server.Server -C out sofe4790u && java -jar server.jar 5555
-```
-
-### Client
-
-1. Compile and Create JAR
-
-```bash
-javac -d out sofe4790u/a1/client/Client.java
+cd client1
+javac -d out ../sofe4790u/a1/client/Client.java
 jar cfe client.jar sofe4790u.a1.client.Client -C out sofe4790u
+java -jar client.jar localhost 5555 5556 client1
 ```
 
-2. Execute JAR file with `<host> <port> <clientName>`
+3. Compile and run client2
 
 ```bash
-java -jar ClientApp.jar localhost 5555 client1
+cd client2
+javac -d out ../sofe4790u/a1/client/Client.java
+jar cfe client.jar sofe4790u.a1.client.Client -C out sofe4790u
+java -jar client.jar localhost 5555 5556 client2
 ```
 
-#### Full Command
+4. Compile and run client3
 
 ```bash
-javac -d out sofe4790u/a1/client/Client.java && jar cfe client.jar sofe4790u.a1.client.Client -C out sofe4790u && java -jar client.jar localhost 5555 client1
+cd client3
+javac -d out ../sofe4790u/a1/client/Client.java
+jar cfe client.jar sofe4790u.a1.client.Client -C out sofe4790u
+java -jar client.jar localhost 5555 5556 client3
 ```

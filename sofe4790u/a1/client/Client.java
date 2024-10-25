@@ -5,9 +5,9 @@ import java.net.*;
 import java.util.Scanner;
 
 public class Client {
-    private static final int MAX_BUFFER_SIZE = 4096;
-    private static Socket socket;
-    private static Socket fileSocket;
+    private static final int MAX_BUFFER_SIZE = 4096; // max buffer size for file transfer
+    private static Socket socket; // socket for text messages
+    private static Socket fileSocket; // socket for file transfer
 
     public static void main(String[] args) {
         if (args.length < 4) {
@@ -15,6 +15,9 @@ public class Client {
             return;
         }
 
+        /*
+         * 1. Parse arguments
+         */
         String serverAddress, clientName;
         int port, filePort;
 
@@ -29,6 +32,9 @@ public class Client {
         }
 
         try {
+            /*
+             * 2. Connect to the server
+             */
             socket = new Socket(serverAddress, port);
             fileSocket = new Socket(serverAddress, filePort);
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -39,6 +45,9 @@ public class Client {
 
             Scanner scanner = new Scanner(System.in);
 
+            /*
+             * 3. Start a new thread to listen for incoming messages
+             */
             new Thread(() -> {
                 try {
                     String message;
@@ -57,6 +66,9 @@ public class Client {
                 }
             }).start();
 
+            /*
+             * 4. Read user input and send messages to the server
+             */
             while (true) {
                 String input = scanner.nextLine();
                 if (input.startsWith("/upload")) {
@@ -83,6 +95,10 @@ public class Client {
         }
     }
 
+    /*
+     * This method is for receiving a file from the server.
+     * This file was likely sent by another client to us
+     */
     private static void receiveFile(String fileName, long fileSize) {
         try {
             File file = new File(fileName);
@@ -108,14 +124,10 @@ public class Client {
         }
     }
 
-    private static void reconnectFileSocket() {
-        try {
-            fileSocket = new Socket(socket.getInetAddress(), fileSocket.getPort());
-        } catch (IOException e) {
-            System.out.println("Could not reconnect file socket: " + e.getMessage());
-        }
-    }
-
+    /*
+     * This method is for sending a file to the server.
+     * we want to send a file to the server, which will then broadcast it to all clients
+     */
     private static void sendFile(File file, DataOutputStream fileOut) {
         try {
             fileOut.writeUTF(file.getName());
@@ -129,7 +141,7 @@ public class Client {
                     fileOut.write(buffer, 0, bytesRead);
                 }
             }
-            fileOut.flush(); // Ensure all data is flushed
+            fileOut.flush();
             System.out.println("File sent: " + file.getName());
 
         } catch (IOException e) {
