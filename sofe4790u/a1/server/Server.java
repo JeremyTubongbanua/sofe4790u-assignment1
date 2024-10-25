@@ -77,6 +77,24 @@ public class Server {
     }
 
     /**
+     * Broadcasts a file to all connected clients except the sender.
+     * 
+     * @param file the file to broadcast
+     * @param sender the client that sent the file
+     */
+    static void broadcastFile(File file, ClientThread sender) {
+        synchronized (clientHandlers) {
+            for (ClientThread client : new HashSet<>(clientHandlers)) {
+                if (client != sender && client.isConnected()) {
+                    client.sendMessage("FILE_TRANSFER " + file.getName() + " " + file.length());
+                    client.sendFile(file);
+                }
+            }
+        }
+        logger.info("File broadcasted to all clients: " + file.getName());
+    }
+
+    /**
      * Removes a client from the list of connected clients.
      * 
      * @param clientHandler the client to remove
@@ -175,28 +193,12 @@ public class Server {
                     logger.warning("Error while saving file from " + clientName + ": " + e.getMessage());
                 }
 
-                broadcastFile(file);
+                Server.broadcastFile(file, this);
 
             } catch (IOException e) {
                 logger.warning("File transfer error with " + clientName + ": " + e.getMessage());
                 disconnect();
             }
-        }
-
-        /**
-         * This method broadcasts a file to all connected clients except the sender.
-         * @param file the file to broadcast
-         */
-        private void broadcastFile(File file) {
-            synchronized (clientHandlers) {
-                for (ClientThread client : new HashSet<>(clientHandlers)) {
-                    if (client != this && client.isConnected()) {
-                        client.sendMessage("FILE_TRANSFER " + file.getName() + " " + file.length());
-                        client.sendFile(file);
-                    }
-                }
-            }
-            logger.info("File broadcasted to all clients: " + file.getName());
         }
 
         /**
